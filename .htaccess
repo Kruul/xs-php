@@ -1,0 +1,16 @@
+# Установка кодировки текстовых файлов
+AddDefaultCharset UTF-8
+
+# Включаем RewriteEngine
+RewriteEngine On
+
+# Защищаем директории от индексации
+Options -Indexes
+
+# Защита директорий приложения, системных файлов и подключенных пакетов
+RewriteRule ^(?:app|system|vendor)\b.* index.php [L]
+
+# Направление всех запросов на index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [L]
