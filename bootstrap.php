@@ -6,11 +6,6 @@
 mb_internal_encoding('UTF-8');
 
 /**
- * Установка локали скриптов
- */
-setlocale(LC_ALL, 'ru_RU.UTF-8');
-
-/**
  * Установка временной зоны
  */
 date_default_timezone_set('Europe/Moscow');
