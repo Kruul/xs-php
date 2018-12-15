@@ -65,7 +65,8 @@ include(__DIR__ . '/system/view.php');
 include(__DIR__ . '/bootstrap.php');
 
 // Запуск роутера
-$route = Router::exec($routes, $routes_patterns);
+$route = Router::exec();
+if($route === null) Controller::return_404();
 $controller = $route['controller'];
 $action = $route['action'];
 

@@ -43,28 +43,12 @@ if(ENV == 'prod') {
 $rest_methods = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ];
 
 /**
- * Паттерны замены для роутов
- * @var  array
- */
-$routes_patterns = [
-
-];
-
-/**
- * Роуты приложения
- * @var array
- */
-$routes = [
-
-];
-
-/**
  * Подключение установленных через composer зависимостей
  */
 $autoload_path = __DIR__ . '/vendor/autoload.php';
 if(file_exists($autoload_path)) include_once($autoload_path);
 
 /**
- * Запуск глобальных плагинов
+ * Запуск глобального плагина минификации выходного HTML
  */
 Html_Minify::init();

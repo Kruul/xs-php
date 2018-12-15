@@ -20,14 +20,14 @@ class Router {
    * Заменяет паттерны в роутах и компилирование резулярных выражений
    * Устанавливает результат в приватное свойство $routes
    *
-   * @param   array  $routes           Массив настроек роутов
-   * @param   array  $routes_patterns  Паттерны для замены в роутах
+   * @param   array  $routes    Массив настроек роутов
+   * @param   array  $patterns  Паттерны для замены в роутах
    */
-  public static function compile_routes($routes, $routes_patterns) {
+  public static function compile_routes($routes, $patterns) {
     foreach($routes as $pattern => $route) {
       $compiled_pattern = $pattern;
 
-      foreach($routes_patterns as $short => $regexp) {
+      foreach($patterns as $short => $regexp) {
         $compiled_pattern = str_replace(':' . $short, $regexp, $compiled_pattern);
       }
       $compiled_pattern = str_replace('/', '\/', $compiled_pattern);
@@ -43,12 +43,23 @@ class Router {
   /**
    * Обрабатывает URI адрес запроса для получения контроллера, действия и параметров
    *
-   * @param   array  $routes           Массив настроек роутов
-   * @param   array  $routes_patterns  Паттерны для замены в роутах
    * @return  array                    Массив с контроллером, действием и параметрами
    */
-  public static function exec($routes, $routes_patterns) {
-    if(count(self::$routes) == 0) self::compile_routes($routes, $routes_patterns);
+  public static function exec() {
+    $router_config = Config::get('router');
+    if($router_config === null) {
+      $router_config = [
+        'routes' => [
+          '(.*)' => '$1'
+        ],
+        'patterns' => [ ]
+      ];
+    }
+
+    $routes = $router_config['routes'];
+    $patterns = $router_config['patterns'];
+
+    if(count(self::$routes) == 0) self::compile_routes($routes, $patterns);
 
     $sub_uri = $_SERVER['REQUEST_URI'];
 
@@ -57,18 +68,22 @@ class Router {
       $sub_uri = substr($sub_uri, strlen(BASE_PATH));
     }
 
-    $uri = $uri_parts = urldecode(parse_url($sub_uri)['path']);
+    $uri = urldecode(parse_url($sub_uri)['path']);
+    $found_uri = null;
 
     // Поиск соответсвия в настройках роутов
     foreach(self::$routes as $pattern => $route) {
       if(preg_match("/^" . $pattern . "$/u", $uri)) {
         // Замена роута на строку с названием контроллера и действия
-        $uri = preg_replace("/^" . $pattern . "$/u", $route, $uri);
+        $found_uri = preg_replace("/^" . $pattern . "$/u", $route, $uri);
         break;
       }
     }
 
-    $uri_parts = explode('/', $uri);
+    // Если роут не был найден в списке, возвращаем null
+    if($found_uri === null) return null;
+
+    $uri_parts = explode('/', $found_uri);
     // Удаление первого пустого элемента, так как путь начинается с "/"
     array_shift($uri_parts);
 
