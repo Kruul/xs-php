@@ -62,7 +62,7 @@ include(__DIR__ . '/system/router.php');
 include(__DIR__ . '/system/view.php');
 
 // Обработка ошибок в зависимости от переменной окружения
-set_error_handler(function($errno, $errstr, $errfile, $errline) {
+function error_handler($errno, $errstr, $errfile, $errline) {
   // Получение типа ошибки
   $errtype = '';
   if($errno == E_ERROR) $errtype = 'E_ERROR';
@@ -130,8 +130,19 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
   }
 
   return true;
+}
+
+set_error_handler('error_handler');
+
+register_shutdown_function(function() {
+  $error = error_get_last();
+  if($error && $error['type'] & (E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR)) {
+    error_handler($error['type'], $error['message'], $error['file'], $error['line']);
+  }
 });
-error_reporting(E_ALL);
+
+// Отключение стандартного вывода текста ошибки
+error_reporting(0);
 
 // Подключения загрузочного файла приложения
 include(__DIR__ . '/bootstrap.php');

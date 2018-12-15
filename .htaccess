@@ -7,10 +7,6 @@ RewriteEngine On
 # Защищаем директории от индексации
 Options -Indexes
 
-# Защита директорий приложения
-RewriteRule ^(?:config|controllers|docs|logs|models|plugins|system|vendor|views)\b.* index.php [L]
-
-# Направление всех запросов на index.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+# Направление всех запросов кроме к /public/ на index.php
+RewriteCond %{REQUEST_URI} !^/public/
 RewriteRule .* index.php [L]
