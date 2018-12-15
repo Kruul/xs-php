@@ -29,7 +29,7 @@ spl_autoload_register(function($class_name) {
       // Добавление "s" в конце так как директории называются controllers и models
       $class_name_parts[0] .= 's';
 
-      $class_filepath = __DIR__ . '/app/' . implode('/', $class_name_parts) . '.php';
+      $class_filepath = __DIR__ . '/' . implode('/', $class_name_parts) . '.php';
       if(!file_exists($class_filepath)) throw new Exception('Класс "' . $class_name . '" не найден');
 
       include_once($class_filepath);
@@ -41,14 +41,14 @@ spl_autoload_register(function($class_name) {
   $lower_class_name = strtolower($class_name);
 
   // Проверка существования единичного файла плагина
-  $class_filepath_single = __DIR__ . '/app/plugins/' . $lower_class_name . '.php';
+  $class_filepath_single = __DIR__ . '/plugins/' . $lower_class_name . '.php';
   if(file_exists($class_filepath_single)) {
     include_once($class_filepath_single);
     return;
   }
 
   // Проверка существования плагина в директории
-  $class_filepath_dir = __DIR__ . '/app/plugins/' . $lower_class_name . '/' . $lower_class_name . '.php';
+  $class_filepath_dir = __DIR__ . '/plugins/' . $lower_class_name . '/' . $lower_class_name . '.php';
   if(file_exists($class_filepath_dir)) {
     include_once($class_filepath_dir);
     return;
@@ -56,13 +56,13 @@ spl_autoload_register(function($class_name) {
 });
 
 // Подключение системных файлов
-include('system/config.php');
-include('system/controller.php');
-include('system/router.php');
-include('system/view.php');
+include(__DIR__ . '/system/config.php');
+include(__DIR__ . '/system/controller.php');
+include(__DIR__ . '/system/router.php');
+include(__DIR__ . '/system/view.php');
 
 // Подключения загрузочного файла приложения
-include('app/bootstrap.php');
+include(__DIR__ . '/bootstrap.php');
 
 // Запуск роутера
 $route = Router::exec($routes, $routes_patterns);
@@ -97,7 +97,7 @@ $handler->before();
 $action_called = false;
 
 // Если используются REST обработчики и присутствует метод
-// $rest_methods - список REST методов, в /app/bootstrap.php
+// $rest_methods - список REST методов, в /bootstrap.php
 if(isset($rest_methods) && in_array($_SERVER['REQUEST_METHOD'], $rest_methods)) {
   // Проверка существования действия
   $action_name = strtolower($_SERVER['REQUEST_METHOD']) . '_action_' . $action;

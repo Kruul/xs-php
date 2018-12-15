@@ -2,7 +2,7 @@
 
 /**
  * Класс для вывода результата работы контроллеров и моделей в файлы видов
- * Файлы видов хранятся в директории /app/views/
+ * Файлы видов хранятся в директории /views/
  *
  * @package  XS-PHP
  * @version  1.0.0
@@ -47,16 +47,7 @@ class View {
   /**
    * Создание нового экземпляра фабричным методом
    *
-   * @param   string  $file  Название файла вида с учетом его директории
-   * @param   array   $data  Локальные переменные вида
-   * @return  object         Объект экземпляра класса
-   *
-   * @example  $view = View::factory('page')
-   *           Создаст экземпляр класса вида из файла /app/views/page.php
-   * @example  $view = View::factory('page', [ 'title' => 'Title' ])
-   *           Создаст экземпляр класса вида с локальной переменной title
-   * @example  $view = View::factory('profile/page')
-   *           Создаст экземпляр класса вида из файла /app/views/profile/page.php
+   * Смотреть описание конструктора класса
    */
   public static function factory($file, $data = []) {
     return new self($file, $data);
@@ -82,14 +73,14 @@ class View {
    * @param  string  $data  Локальные переменные вида
    *
    * @example  $view = new View('page')
-   *           Создаст экземпляр класса вида из файла /app/views/page.php
+   *           Создаст экземпляр класса вида из файла /views/page.php
    * @example  $view = new View('page', [ 'title' => 'Title' ])
    *           Создаст экземпляр класса вида с локальной переменной title
    * @example  $view = new View('profile/page')
-   *           Создаст экземпляр класса вида из файла /app/views/profile/page.php
+   *           Создаст экземпляр класса вида из файла /views/profile/page.php
    */
   public function __construct($file, $data = []) {
-    $file_path = __DIR__ . '/../app/views/' . $file . '.php';
+    $file_path = __DIR__ . '/../views/' . $file . '.php';
     if(!file_exists($file_path)) {
       throw new Exception('Файл вида "' . $file . '" не найден');
     }

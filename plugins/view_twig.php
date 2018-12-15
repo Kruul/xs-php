@@ -2,7 +2,7 @@
 
 /**
  * Класс для вывода результата работы контроллеров и моделей в файлы видов, используя шаблонизатор Twig
- * Файлы видов хранятся в директории /app/views/
+ * Файлы видов хранятся в директории /views/
  *
  * @package  XS-PHP
  * @version  1.0.0
@@ -47,11 +47,7 @@ class View_Twig {
   /**
    * Создание нового экземпляра фабричным методом
    *
-   * @param   string  $file  Название файла вида с учетом его директории
-   * @return  object         Объект экземпляра класса
-   *
-   * @example  $view = View::factory('page')  Создаст экземпляр класса вида из файла /app/views/page.php
-   * @example  $view = View::factory('profile/page')  Создаст экземпляр класса вида из файла /app/views/profile/page.php
+   * Смотреть описание конструктора класса
    */
   public static function factory($file) {
     return new self($file);
@@ -75,8 +71,10 @@ class View_Twig {
    *
    * @param  string  $key  Название файла вида с учетом его директории
    *
-   * @example  $view = new View('page')  Создаст экземпляр класса вида из файла /app/views/page.php
-   * @example  $view = new View('profile/page')  Создаст экземпляр класса вида из файла /app/views/profile/page.php
+   * @example  $view = new View('page')  Создаст экземпляр класса вида
+   *                                     из файла /views/page.php
+   * @example  $view = new View('profile/page')  Создаст экземпляр класса вида
+   *                                             из файла /views/profile/page.php
    */
   public function __construct($file) {
     $file_path = __DIR__ . '/../views/' . $file . '.tpl';

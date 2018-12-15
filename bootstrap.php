@@ -8,7 +8,7 @@ mb_internal_encoding('UTF-8');
 /**
  * Установка локали скриптов
  */
-setlocale(LC_ALL, 'ru_RU.utf-8');
+setlocale(LC_ALL, 'ru_RU.UTF-8');
 
 /**
  * Установка временной зоны
@@ -66,7 +66,7 @@ $routes = [
 /**
  * Подключение установленных через composer зависимостей
  */
-$autoload_path = __DIR__ . '/../vendor/autoload.php';
+$autoload_path = __DIR__ . '/vendor/autoload.php';
 if(file_exists($autoload_path)) include_once($autoload_path);
 
 /**

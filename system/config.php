@@ -2,7 +2,7 @@
 
 /**
  * Класс загрузки файлов настроек
- * Файлы настроек хранятся в директории /app/config/
+ * Файлы настроек хранятся в директории /config/
  *
  * @package  XS-PHP
  * @version  1.0.0
@@ -26,7 +26,7 @@ class Config {
   protected static function load($config_name) {
     if(isset(self::$cache[$config_name])) return Config::$cache[$config_name];
 
-    $config_filepath = __DIR__ . '/../app/config/' . $config_name . '.php';
+    $config_filepath = __DIR__ . '/../config/' . $config_name . '.php';
     if(!file_exists($config_filepath)) return null;
     self::$cache[$config_name] = include($config_filepath);
 
