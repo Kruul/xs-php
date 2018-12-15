@@ -1,9 +1,7 @@
 <?
 
 /**
- * Пример базового класса для наследования его другими классами
- *
- * Код предоставлен для примера, он не работает, так как использует выдуманные модели
+ * Пример базового контроллера для наследования
  */
 class Controller_Base extends Controller_Template {
   /**
@@ -14,11 +12,11 @@ class Controller_Base extends Controller_Template {
   public function before() {
     // Проверка авторизации в выдуманной модели
     // В случае неуспеха происходи редирект на страницу авторизации
-    if(!Model_Auth::check()) $this->redirect('/auth/login/');
+    if(!Model_Test::check_auth()) Controller::redirect('/auth');
 
-    // Получение данных и установка в свойства контроллера
-    // Пропадает необходимость запрашивать их повторно
-    $user = Model_User::get($_SESSION['id']);
+    // Получение данных и установка в свойство контроллера и глобальную переменную вида
+    // Таким образом, пропадает необходимость запрашивать их повторно
+    $user = Model_Test::get_user_info(@$_SESSION['id']);
     $this->user = $user;
     View::set_global('user', $user);
   }

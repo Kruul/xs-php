@@ -106,7 +106,7 @@ class View {
    * @param  mixed   $value  Значение переменной
    *
    * @example  $view->set('key', 'value')  Добавит локальную переменную вида
-   *                                        с названием $key и значением 'value'
+   *                                       с названием $key и значением 'value'
    */
   public function set($key, $value) {
     $this->data[$key] = $value;

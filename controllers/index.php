@@ -1,20 +1,30 @@
 <?
 
-class Controller_Index extends Controller_Template_Base {
+/**
+ * Пример корневого контроллера
+ */
+class Controller_Index extends Controller_Base {
+  /**
+   * Пример корневого действия
+   */
   public function action_index() {
+    // Получение настроек из /config/main.php
+    $main_config = Config::get('main');
+
     // Установка глобальной переменной вида title
     // Она используется как в базовом шаблоне вида, так и в шаблоне вида контента
-    View::set_global('title', 'XS-PHP');
+    View::set_global('title', $main_config['title']);
 
     // Создание экземпляра класса вида контента
-    $content_view = View::factory('content');
-
-    // Устанавливаем локальные переменные вида контента
-    $content_view->text1 = 'XS-PHP - это очень маленький (7 файлов без примеров и базовых плагинов) и быстрый PHP MVC фреймворк.';
-    $content_view->set('text2', '<a href="https://github.com/xooler/xs-php">https://github.com/xooler/xs-php</a>');
+    // Вторым параметром передается массив локальных переменных,
+    // где ключ - название переменной, значение - значение переменной
+    $content_view = View::factory('content', [
+      'text1' => $main_config['description'],
+      'text2' => '<a href="https://github.com/xooler/xs-php">https://github.com/xooler/xs-php</a>'
+    ]);
 
     // Устанавливаем экземпляр класса вида контента
-    // в свойство content родительского класса базового шаблона
+    // в свойство content родительского контроллера базового шаблона
     $this->content = $content_view;
   }
 }
