@@ -1,7 +1,7 @@
 <?
 
 /**
- * Тестовая демонстрационная модель
+ * Пример модели
  */
 class Model_Test {
   public static function get_data() {

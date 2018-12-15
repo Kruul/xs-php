@@ -5,7 +5,7 @@
  * Маленький и быстрый PHP MVC фреймворк
  *
  * @package  XS-PHP
- * @version  1.0.0
+ * @version  2.0.0
  * @author   Sergei Ivankov <sergeiivankov@yandex.ru>
  * @link     https://github.com/xooler/xs-php
  */

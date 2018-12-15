@@ -5,7 +5,7 @@
  * Файлы контроллеров хранятся в директории /controllers/
  *
  * @package  XS-PHP
- * @version  1.0.0
+ * @version  2.0.0
  * @author   Sergei Ivankov <sergeiivankov@yandex.ru>
  * @link     https://github.com/xooler/xs-php
  */
@@ -107,7 +107,7 @@ class Controller {
    * Ответ контроллера
    * @var  string
    */
-  public $response = '';
+  public $response;
 
   /**
    * Запускает функции вызываемые до методов контроллера

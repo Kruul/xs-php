@@ -7,7 +7,7 @@ RewriteEngine On
 # Защищаем директории от индексации
 Options -Indexes
 
-# Защита директорий приложения, системных файлов и подключенных пакетов
+# Защита директорий приложения
 RewriteRule ^(?:config|controllers|docs|models|plugins|system|vendor|views)\b.* index.php [L]
 
 # Направление всех запросов на index.php
