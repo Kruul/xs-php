@@ -25,6 +25,8 @@ class Model_Test {
    * @return  bool  Результат проверки
    */
   public static function check_auth() {
+    $_COOKIE['id'] = 1;
+
     return true;
   }
 

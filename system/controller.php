@@ -92,6 +92,36 @@ class Controller {
   }
 
   /**
+   * Функция обработчик 500 ошибки
+   * @var  callable
+   */
+  private static $error_500_handler;
+
+  /**
+   * Установка обработчика 500 ошибки
+   *
+   * @param  callable  $handler  Функция, вызываемая в случае 500 ошибки
+   */
+  public static function set_error_500_handler($handler) {
+    self::$error_500_handler = $handler;
+  }
+
+  /**
+   * Возврат контента страницы с 500 ошибкой
+   */
+  public static function return_500() {
+    header('HTTP/1.1 500 Internal Server Error');
+
+    if(self::$error_500_handler) {
+      call_user_func(self::$error_500_handler);
+      exit();
+    }
+
+    echo 'Internal Server Error';
+    exit();
+  }
+
+  /**
    * Название текущего контроллера
    * @var  string
    */

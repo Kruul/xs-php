@@ -15,7 +15,7 @@ date_default_timezone_set('Europe/Moscow');
  * dev - разработка
  * prod - продакшен
  */
-define('ENV', 'dev');
+define('ENV', 'prod');
 
 /**
  * Базовый путь до файлов фреймворка от базовой директории веб хоста (без слеша в конце)
@@ -24,27 +24,16 @@ define('ENV', 'dev');
 define('BASE_PATH', '');
 
 /**
- * Настройки вывода ошибок в зависимости от переменной окружения
- */
-if(ENV == 'prod') {
-  error_reporting(0);
-  ini_set('display_errors', 0);
-} else {
-  error_reporting(E_ALL);
-  ini_set('display_errors', 1);
-}
-
-/**
- * Список REST методов для создания отдельных обработчиков запросов
- * @var  array
- */
-$rest_methods = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ];
-
-/**
  * Подключение установленных через composer зависимостей
  */
 $autoload_path = __DIR__ . '/vendor/autoload.php';
 if(file_exists($autoload_path)) include_once($autoload_path);
+
+/**
+ * Установка обработчиков ошибок
+ */
+Controller::set_error_404_handler([ 'Controller_Base', 'handler_404' ]);
+Controller::set_error_500_handler([ 'Controller_Base', 'handler_500' ]);
 
 /**
  * Запуск глобального плагина минификации выходного HTML

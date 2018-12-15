@@ -16,8 +16,18 @@ class Controller_Base extends Controller_Template {
 
     // Получение данных и установка в свойство контроллера и глобальную переменную вида
     // Таким образом, пропадает необходимость запрашивать их повторно
-    $user = Model_Test::get_user_info(@$_SESSION['id']);
+    $user = Model_Test::get_user_info($_COOKIE['id']);
     $this->user = $user;
     View::set_global('user', $user);
+  }
+
+  /**
+   * Примеры методов обработчиков ошибок
+   */
+  public static function handler_404() {
+    echo '<h1>404 error</h1>';
+  }
+  public static function handler_500() {
+    echo '<h1>500 error</h1>';
   }
 }
