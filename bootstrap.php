@@ -36,6 +36,9 @@ Controller::set_error_404_handler([ 'Controller_Base', 'handler_404' ]);
 Controller::set_error_500_handler([ 'Controller_Base', 'handler_500' ]);
 
 /**
- * Запуск глобального плагина минификации выходного HTML
+ * Настройка плагинов
  */
+// Установка настроек подключения к базе данных
+DB::config(Config::get('db', true));
+// Инициализация плагина минификации выходного HTML
 Html_Minify::init();
