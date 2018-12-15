@@ -123,5 +123,6 @@ if(!$action_called) {
 $handler->after();
 $handler->after_handlers();
 
-// Вывод ответа контроллера
-echo $handler->response;
+// Вывод ответа контроллера в зависимости от типа
+if(gettype($handler->response) == 'array') echo json_encode($handler->response, JSON_UNESCAPED_UNICODE);
+else echo $handler->response;
