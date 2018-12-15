@@ -11,8 +11,16 @@
  */
 class View {
   /**
+   * Расширение файлов шаблона
+   *
+   * @var  string
+   */
+  protected static $template_extension = '.php';
+
+  /**
    * Хранение глобальных переменных вида
    * Глобальные переменых вида доступны в каждом созданном виде в рамках отдельного запроса
+   *
    * @var  array
    */
   protected static $global_data = [];
@@ -28,26 +36,37 @@ class View {
 	}
 
   /**
-   * Рендерит вид, используя глобальные и локальные переменные вида
+   * Рендеринг вида
    *
    * @param   string  $file_path  Путь к файлу вида
-   * @param   array   $data       Массив с локальными переменными вида
+   * @param   array   $data       Массив с переменными вида
    * @return  string              Скомпилированная строка вида
    */
   protected static function render($file_path, $data) {
-    // Локальные переменные перекрывают глобальные
-		extract(self::$global_data);
+    // Защита от перезаписи переменной $file_path переменными вида
+    $ljCc5sIoKjm4xNm3DIwI = $file_path;
+
     extract($data);
 
 		ob_start();
-		include($file_path);
+		include($ljCc5sIoKjm4xNm3DIwI);
+
 		return ob_get_clean();
 	}
 
   /**
    * Создание нового экземпляра фабричным методом
    *
-   * Смотреть описание конструктора класса
+   * @param   string  $file  Название файла вида с учетом его директории
+   * @param   array   $data  Локальные переменные вида
+   * @return  object         Объект экземпляра класса
+   *
+   * @example  $view = View::factory('page')
+   *           Создаст экземпляр класса вида из файла /views/page.php
+   * @example  $view = View::factory('page', [ 'title' => 'Title' ])
+   *           Создаст экземпляр класса вида с локальной переменной title
+   * @example  $view = View::factory('profile/page')
+   *           Создаст экземпляр класса вида из файла /views/profile/page.php
    */
   public static function factory($file, $data = []) {
     return new self($file, $data);
@@ -56,15 +75,17 @@ class View {
   /**
    * Хранение локальных переменных вида
    * Устанавливаются для конкретного экземпляра вида
+   *
    * @var  array
    */
-  protected $data;
+  protected $data = [];
 
   /**
    * Путь к файлу вида
+   *
    * @var  string
    */
-  protected $file_path;
+  protected $file_path = '';
 
   /**
    * Конструктор класса вида
@@ -80,7 +101,7 @@ class View {
    *           Создаст экземпляр класса вида из файла /views/profile/page.php
    */
   public function __construct($file, $data = []) {
-    $file_path = __DIR__ . '/../views/' . $file . '.php';
+    $file_path = __DIR__ . '/../views/' . $file . self::$template_extension;
     if(!file_exists($file_path)) {
       throw new Exception('Файл вида "' . $file . '" не найден');
     }
@@ -120,7 +141,8 @@ class View {
    */
   public function __toString() {
     try {
-			return self::render($this->file_path, $this->data);
+      $data = array_merge(self::$global_data, $this->data);
+			return self::render($this->file_path, $data);
 		}
 		catch (Exception $e) {
       // Обход ограничение на исключения в методе __toString
