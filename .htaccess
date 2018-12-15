@@ -8,7 +8,7 @@ RewriteEngine On
 Options -Indexes
 
 # Защита директорий приложения, системных файлов и подключенных пакетов
-RewriteRule ^(?:app|system|vendor)\b.* index.php [L]
+RewriteRule ^(?:config|controllers|docs|models|plugins|system|vendor|views)\b.* index.php [L]
 
 # Направление всех запросов на index.php
 RewriteCond %{REQUEST_FILENAME} !-f
