@@ -98,8 +98,7 @@ $handler->before();
 $action_called = false;
 
 // Если используются REST обработчики и присутствует метод
-// $rest_methods - список REST методов, в /bootstrap.php
-if(isset($rest_methods) && in_array($_SERVER['REQUEST_METHOD'], $rest_methods)) {
+if(in_array($_SERVER['REQUEST_METHOD'], [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ])) {
   // Проверка существования действия
   $action_name = strtolower($_SERVER['REQUEST_METHOD']) . '_action_' . $action;
   if(method_exists($handler, $action_name)) {

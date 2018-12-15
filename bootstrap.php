@@ -14,8 +14,6 @@ date_default_timezone_set('Europe/Moscow');
  * Переменная окружения
  * dev - разработка
  * prod - продакшен
- *
- * @var  string
  */
 define('ENV', 'dev');
 

@@ -12,10 +12,10 @@
 class Config {
   /**
    * Переменная для хранения уже загруженых настроек
-   * Загруженные настройки кэшируются для отдельного запроса
-   * @var array
+   * Загруженные настройки кэшируются для отдельного HTTP запроса
+   * @var  array
    */
-  protected static $cache = array();
+  protected static $cache = [];
 
   /**
    * Загрузка файла настроек по названию
@@ -24,7 +24,7 @@ class Config {
    * @return  mixed                 Данные файла настроек или NULL, в случае отсутствия файла
    */
   protected static function load($config_name) {
-    if(isset(self::$cache[$config_name])) return Config::$cache[$config_name];
+    if(isset(self::$cache[$config_name])) return self::$cache[$config_name];
 
     $config_filepath = __DIR__ . '/../config/' . $config_name . '.php';
     if(!file_exists($config_filepath)) return null;

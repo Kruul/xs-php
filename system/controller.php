@@ -95,19 +95,19 @@ class Controller {
    * Название текущего контроллера
    * @var  string
    */
-  public $controller;
+  public $controller = '';
 
   /**
    * Название текущего действия без 'action_' префикса
    * @var  string
    */
-  public $action;
+  public $action = '';
 
   /**
    * Ответ контроллера
    * @var  string
    */
-  public $response;
+  public $response = null;
 
   /**
    * Запускает функции вызываемые до методов контроллера
