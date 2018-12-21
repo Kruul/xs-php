@@ -63,6 +63,10 @@ include(__DIR__ . '/system/view.php');
 
 // Обработка ошибок в зависимости от переменной окружения
 function error_handler($errno, $errstr, $errfile, $errline) {
+  // Проверка использования оператора управления ошибками @
+  $is_report = error_reporting();
+  if($is_report === 0) return;
+
   // Получение типа ошибки
   $errtype = '';
   if($errno == E_ERROR) $errtype = 'E_ERROR';
@@ -141,8 +145,8 @@ register_shutdown_function(function() {
   }
 });
 
-// Отключение стандартного вывода текста ошибки
-error_reporting(0);
+// Включение вывода всех ошибок
+error_reporting(E_ALL);
 
 // Подключения загрузочного файла приложения
 include(__DIR__ . '/bootstrap.php');
@@ -189,7 +193,7 @@ $handler->before();
 // Попытка запуска действия контроллера с REST перфиксом
 $rest_action_name = strtolower($_SERVER['REQUEST_METHOD']) . '_action_' . $action;
 if(method_exists($handler, $rest_action_name)) {
-  call_user_func_array(array($handler, $action_name), $route['params']);
+  call_user_func_array(array($handler, $rest_action_name), $route['params']);
 }
 // Попытка запуска действия без REST префикса
 else {

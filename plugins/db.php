@@ -74,7 +74,7 @@ class DB {
 	/**
 	 * Получение первого элемента результата запроса
 	 *
-	 * @return  string|boolean  Первый элемент результата запроса
+	 * @return  string|null  Первый элемент результата запроса
 	 *
 	 * @example  self::get_one("SELECT name FROM users WHERE id = ?i", 5)
 	 *           Вернет строку 'Ivan'
@@ -86,13 +86,13 @@ class DB {
 			self::free($res);
 			if(is_array($row)) return reset($row);
 		}
-		return false;
+		return null;
 	}
 
 	/**
 	 * Получение первой строки результатов запроса
 	 *
-	 * @return  array|false  Массив с полями строки результата запроса
+	 * @return  array|null  Массив с полями строки результата запроса
 	 *
 	 * @example  self::get_row("SELECT id, name, age FROM users WHERE id = ?i", 5)
 	 *           Вернет массив с результаами [ 'id' => '5', 'name' => 'Ivan', 'age' => '30' ]
@@ -104,7 +104,7 @@ class DB {
 			self::free($res);
 			return $ret;
 		}
-		return false;
+		return null;
 	}
 
 	/**
