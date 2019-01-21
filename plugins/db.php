@@ -28,7 +28,7 @@ class DB {
 		'base' => '',
 		'port' => NULL,
 		'socket' => NULL,
-		'charset' => 'utf8',
+		'charset' => 'utf8'
 	];
 
   /**
