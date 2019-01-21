@@ -22,6 +22,10 @@ Validator::add_sanitize('currency', function($value) {
   return number_format(@floatval($value), 2, '.', '');
 });
 
+Validator::add_sanitize('tolower', function($value) {
+  return mb_strtolower($value);
+});
+
 Validator::add_sanitize('floatval', function($value) {
   return @floatval($value);
 });

@@ -112,7 +112,7 @@ class Validator {
    * @param   mixed   $params  Параметры проверки
    * @return  bool             Результат проверки
    */
-  protected function filter($name, $value, $params = null) {
+  public function filter($name, $value, $params = null) {
     $binded_filter = Closure::bind(self::$filters[$name], $this);
     return $binded_filter($value, $params);
   }
@@ -125,7 +125,7 @@ class Validator {
    * @param   mixed   $params  Параметры очистки
    * @return  bool             Результат очистки
    */
-  protected function sanitize($name, $value, $params = null) {
+  public function sanitize($name, $value, $params = null) {
     $binded_sanitize = Closure::bind(self::$sanitizers[$name], $this);
     return $binded_sanitize($value, $params);
   }
@@ -136,6 +136,8 @@ class Validator {
    * @param  string  $name  Ключ поля в данных для проверки
    */
   public function field($name) {
+    $this->new_rules_group = true;
+
     $this->fields[] = [
       'name' => $name,
       'rules' => []
@@ -198,8 +200,6 @@ class Validator {
    * @return  object            Экземпляр класса валидатора
    */
   public function message($message) {
-    $this->new_rules_group = true;
-
     $field_index = count($this->fields) - 1;
     $rule_index = count($this->fields[$field_index]['rules']) - 1;
     $this->fields[count($this->fields) - 1]['rules'][$rule_index]['message'] = $message;

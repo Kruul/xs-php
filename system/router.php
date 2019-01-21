@@ -68,7 +68,9 @@ class Router {
       $sub_uri = substr($sub_uri, strlen(BASE_PATH));
     }
 
-    $uri = urldecode(parse_url($sub_uri)['path']);
+    $parsed_url = parse_url($sub_uri);
+    if(!isset($parsed_url['path'])) Controller::return_404();
+    $uri = urldecode($parsed_url['path']);
     $found_uri = null;
 
     // Поиск соответсвия в настройках роутов

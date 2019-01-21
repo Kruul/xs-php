@@ -57,13 +57,11 @@ Validator::add_filter('min', function($value, $params) {
 });
 
 Validator::add_filter('max', function($value, $params) {
-  return $this->filter('is_numeric', $value) &&
-         $value <= $params;
+  return $value <= $params;
 });
 
 Validator::add_filter('between', function($value, $params) {
-  return $this->filter('is_numeric', $value) &&
-         $value >= $params['min'] && $value <= $params['max'];
+  return $value >= $params['min'] && $value <= $params['max'];
 });
 
 Validator::add_filter('in', function($value, $params) {
