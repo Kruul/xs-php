@@ -88,7 +88,7 @@ function error_handler($errno, $errstr, $errfile, $errline) {
   // Сохранение в файл лога
   $log_name = time() . '-' . uniqid() . '.txt';
 
-  $log_content = '';
+  $log_content = "$errtype\n\n";
   $log_content .= date('d.m.Y в H:i:s') . "\n\n";
   $log_content .= "Uri: {$_SERVER['REQUEST_URI']}\n\n";
   if(count($_COOKIE) != 0) {

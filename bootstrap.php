@@ -15,7 +15,7 @@ date_default_timezone_set('Europe/Moscow');
  * dev - разработка
  * prod - продакшен
  */
-define('ENV', 'prod');
+define('ENV', 'dev');
 
 /**
  * Базовый путь до файлов фреймворка от базовой директории веб хоста (без слеша в конце)
