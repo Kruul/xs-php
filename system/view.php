@@ -2,7 +2,6 @@
 
 /**
  * Класс для вывода результата работы контроллеров и моделей в файлы видов
- * Файлы видов хранятся в директории /views/
  *
  * @package  XS-PHP
  * @version  2.0.0
@@ -19,7 +18,8 @@ class View {
 
   /**
    * Хранение глобальных переменных вида
-   * Глобальные переменых вида доступны в каждом созданном виде в рамках отдельного запроса
+   * Глобальные переменых вида доступны в каждом созданном виде
+   * в рамках отдельного запроса
    *
    * @var  array
    */
@@ -113,8 +113,9 @@ class View {
   /**
    * Магический метод установки локальной переменной вида
    *
-   * @example  $view->key = 'value'  Добавит локальную переменную вида
-   *                                 с названием $key и значением 'value'
+   * @example  $view->key = 'value'
+   *           Добавит локальную переменную вида
+   *           с названием $key и значением 'value'
    */
 	public function __set($key, $value) {
 		$this->data[$key] = $value;
@@ -126,8 +127,9 @@ class View {
    * @param  string  $key    Название переменной
    * @param  mixed   $value  Значение переменной
    *
-   * @example  $view->set('key', 'value')  Добавит локальную переменную вида
-   *                                       с названием $key и значением 'value'
+   * @example  $view->set('key', 'value')
+   *           Добавит локальную переменную вида
+   *           с названием $key и значением 'value'
    */
   public function set($key, $value) {
     $this->data[$key] = $value;
@@ -136,8 +138,9 @@ class View {
   /**
    * Магический метод конвертации класса в строку
    *
-   * @example  $this->response = $view  Нет необходимости вызывать рендеринг вручную,
-   *                                    он запустится автоматически, когда это будет нужно.
+   * @example  $this->response = $view
+   *           Нет необходимости вызывать рендеринг вручную,
+   *           он запустится автоматически, когда это будет нужно.
    */
   public function __toString() {
     try {
@@ -146,7 +149,10 @@ class View {
 		}
 		catch (Exception $e) {
       // Обход ограничение на исключения в методе __toString
-      trigger_error($e->getMessage() . "\n" . $e->getTraceAsString(), E_USER_ERROR);
+      trigger_error(
+        $e->getMessage() . "\n" . $e->getTraceAsString(),
+        E_USER_ERROR
+      );
 			return '';
 		}
 	}

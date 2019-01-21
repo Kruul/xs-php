@@ -2,7 +2,6 @@
 
 /**
  * Базовый контроллер
- * Файлы контроллеров хранятся в директории /controllers/
  *
  * @package  XS-PHP
  * @version  2.0.0
@@ -15,13 +14,14 @@ class Controller {
    *
    * @param  string  $uri  Uri адрес для редиректа
    *
-   * @example  Controller::redirect('/auth/login');  Редирект на страницу /auth/login
-   *                                                 с учетом базового пути.
-   *                                                 Если базовый путь '/blog', то редирект
-   *                                                 будет на /blog/auth/login
+   * @example  Controller::redirect('/auth/login')
+   *           Редирект на страницу /auth/login с учетом базового пути.
+   *           Если базовый путь '/blog', то редирект будет на /blog/auth/login
    */
   public static function redirect($url) {
-    if(substr($url, 0, 7) !== 'http://' && substr($url, 0, 8) !== 'https://') {
+    $url_sub = substr($url, 0, 7);
+
+    if($url_sub !== 'http://' && $url_sub !== 'https:/') {
       $url = BASE_PATH . $url;
     }
 
@@ -31,18 +31,20 @@ class Controller {
 
   /**
    * Массив с функциями для запуска до методов контроллера
+   *
    * @var  array
    */
   private static $before_handlers = [];
 
   /**
    * Массив с функциями для запуска после методов контроллера
+   *
    * @var  array
    */
   private static $after_handlers = [];
 
   /**
-   * Добавление функции обработки запроса до методов контроллера
+   * Добавление функции обработки запроса до метода контроллера
    *
    * @param  callable  $function  Функция обработки запроса, должна принимать
    *                              один параметр - экземпляр текущего контроллера
@@ -52,7 +54,7 @@ class Controller {
   }
 
   /**
-   * Добавление функции обработки запроса после методов контроллера
+   * Добавление функции обработки запроса после метода контроллера
    *
    * @param  callable  $function  Функция обработки запроса, должна принимать
    *                              один параметр - экземпляр текущего контроллера
@@ -63,6 +65,7 @@ class Controller {
 
   /**
    * Функция обработчик 404 ошибки
+   *
    * @var  callable
    */
   private static $error_404_handler;
@@ -70,7 +73,7 @@ class Controller {
   /**
    * Установка обработчика 404 ошибки
    *
-   * @param  callable  $handler  Функция, вызываемая в случае 404 ошибки
+   * @param  callable  $handler  Функция вызываемая в случае 404 ошибки
    */
   public static function set_error_404_handler($handler) {
     self::$error_404_handler = $handler;
@@ -93,6 +96,7 @@ class Controller {
 
   /**
    * Функция обработчик 500 ошибки
+   *
    * @var  callable
    */
   private static $error_500_handler;
@@ -100,7 +104,7 @@ class Controller {
   /**
    * Установка обработчика 500 ошибки
    *
-   * @param  callable  $handler  Функция, вызываемая в случае 500 ошибки
+   * @param  callable  $handler  Функция вызываемая в случае 500 ошибки
    */
   public static function set_error_500_handler($handler) {
     self::$error_500_handler = $handler;
@@ -160,12 +164,14 @@ class Controller {
   }
 
   /**
-   * Функция-заглушка для предотвращения ошибки в случает отсутствия метода before в контроллере
+   * Функция-заглушка для предотвращения ошибки
+   * в случает отсутствия метода before в контроллере
    */
   public function before() {}
 
   /**
-   * Функция-заглушка для предотвращения ошибки в случает отсутствия метода after в контроллере
+   * Функция-заглушка для предотвращения ошибки
+   * в случает отсутствия метода after в контроллере
    */
   public function after() {}
 }

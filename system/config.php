@@ -2,7 +2,6 @@
 
 /**
  * Класс загрузки файлов настроек
- * Файлы настроек хранятся в директории /config/
  *
  * @package  XS-PHP
  * @version  2.0.0
@@ -11,7 +10,7 @@
  */
 class Config {
   /**
-   * Переменная для хранения уже загруженых настроек
+   * Переменная для кэширования настроек
    * Загруженные настройки кэшируются для отдельного HTTP запроса
    * @var  array
    */
@@ -21,7 +20,8 @@ class Config {
    * Загрузка файла настроек по названию
    *
    * @param   string  $config_name  Название файла настроек
-   * @return  mixed                 Данные файла настроек или NULL, в случае отсутствия файла
+   * @return  mixed                 Данные файла настроек
+   *                                или NULL, в случае отсутствия файла
    */
   protected static function load($config_name) {
     if(isset(self::$cache[$config_name])) return self::$cache[$config_name];
@@ -48,13 +48,17 @@ class Config {
    * окружения, то нужно указать 2 параметр как true.
    *
    * @param   string   $config_name  Название файла настроек
-   * @param   boolean  $conside_env  Загружать сразу же файл настроек с переменной окружения
-   * @return  mixed                  Данные файла настроек или NULL, в случае отсутствия файла
+   * @param   boolean  $conside_env  Загружать сразу же файл настроек
+   *                                 с переменной окружения
+   * @return  mixed                  Данные файла настроек
+   *                                 или NULL, в случае отсутствия файла
    *
-   * @example  Config::get('main')  Загрузит файл main.php или main.prod.php
-   *                                в случае отсутсвия main.php и указания в ENV 'prod'
-   * @example  Config::get('main', true)  Загрузит файл main.dev.php не проверяя
-   *                                      существования файла main.php
+   * @example  Config::get('main')
+   *           Загрузит файл main.php или main.prod.php
+   *           в случае отсутсвия main.php и указания в ENV 'prod'
+   * @example  Config::get('main', true)
+   *           Загрузит файл main.dev.php не проверяя
+   *           существования файла main.php
    */
   public static function get($config_name, $conside_env = false) {
     if($conside_env) return self::load($config_name . '.' . ENV);
