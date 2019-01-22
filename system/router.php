@@ -34,7 +34,7 @@ class Router {
    * @return  array                    Массив с контроллером, действием и параметрами
    */
   public static function exec() {
-    $routes_config = Config::get('router');
+    $routes_config = Config::get('routes');
     if($routes_config === null) $routes_config = [ '(.*)' => '$1' ];
 
     $routes = self::compile_routes($routes_config);
