@@ -53,14 +53,13 @@ class Validator {
   /**
    * Создание нового экземпляра фабричным методом
    *
-   * @param   array   $data  Данные для валидации
    * @return  object         Объект экземпляра класса
    *
-   * @example  $v = Validator::factory($_POST)
+   * @example  $v = Validator::factory()
    *           Создаст экземпляр класса валидатора
    */
-  public static function factory($data) {
-    return new self($data);
+  public static function factory() {
+    return new self();
   }
 
   /**
@@ -71,7 +70,7 @@ class Validator {
   protected $fields = [];
 
   /**
-   * Данные для валидации
+   * Отфильтрованный чистильщиками массив данных, устанавливается после валидации
    *
    * @var  array
    */
@@ -93,24 +92,18 @@ class Validator {
   protected $new_rules_group = true;
 
   /**
-   * Конструктор класса валидатора
-   *
-   * @param   array   $data  Данные для валидации
-   *
-   * @example  $v = new Validator($_POST)
-   *           Создаст экземпляр класса валидатора
-   */
-  public function __construct($data) {
-    $this->data = $data;
-	}
-
-  /**
    * Запуск проверки фильтра
+   * Для вызова фильтра из функции фильтра
    *
    * @param   string  $name    Название фильтра
    * @param   mixed   $value   Значение для проверки
    * @param   mixed   $params  Параметры проверки
    * @return  bool             Результат проверки
+   *
+   * @example  $result = $this->filter('filter_name', 'value', $params)
+   *           Вызов другого фильтра из функции фильтра
+   *           При вызове функции фильтра к ней биндится экземпляр
+   *           валидатора как $this
    */
   public function filter($name, $value, $params = null) {
     $binded_filter = Closure::bind(self::$filters[$name], $this);
@@ -119,11 +112,17 @@ class Validator {
 
   /**
    * Запуск чистки параметра
+   * Для вызова чистильщика из функции чистильщика
    *
    * @param   string  $name    Название чистильшика
    * @param   mixed   $value   Значение для очистки
    * @param   mixed   $params  Параметры очистки
    * @return  bool             Результат очистки
+   *
+   * @example  $result = $this->sanitize('sanitize_name', 'value', $params)
+   *           Вызов другого чистильщика из функции чистильщика
+   *           При вызове функции чистки к ней биндится экземпляр
+   *           валидатора как $this
    */
   public function sanitize($name, $value, $params = null) {
     $binded_sanitize = Closure::bind(self::$sanitizers[$name], $this);
@@ -134,6 +133,8 @@ class Validator {
    * Добавление поля в проверку
    *
    * @param  string  $name  Ключ поля в данных для проверки
+   *
+   * @example  $v->field('field_name')
    */
   public function field($name) {
     $this->new_rules_group = true;
@@ -152,6 +153,8 @@ class Validator {
    * @param   string  $name    Название чистильщика
    * @param   mixed   $params  Параметры чистильщика
    * @return  object           Экземпляр класса валидатора
+   *
+   * @example  $v->field('field_name')->change('intval')
    */
   public function change($name, $params = null) {
     $this->fields[count($this->fields) - 1]['rules'][] = [
@@ -169,6 +172,8 @@ class Validator {
    * @param   string  $name    Название фильтра
    * @param   mixed   $params  Параметры фильтра
    * @return  object           Экземпляр класса валидатора
+   *
+   * @example  $v->field('field_name')->check('not_empty')
    */
   public function check($name, $params = null) {
     $field_index = count($this->fields) - 1;
@@ -198,6 +203,9 @@ class Validator {
    *
    * @param   string  $message  Текст сообщения
    * @return  object            Экземпляр класса валидатора
+   *
+   * @example  $v->field('field_name')->check('not_empty')
+   *             ->message('field_name не может быть пустым')
    */
   public function message($message) {
     $field_index = count($this->fields) - 1;
@@ -211,6 +219,11 @@ class Validator {
    * Индикатор прекращения проверки остальных правил поля при провале проверки
    *
    * @return  object  Экземпляр класса валидатора
+   *
+   * @example  $v->field('field_name')
+   *             ->check('not_empty') // Если эта проверка не пройдена
+   *             ->stopOnFail()
+   *             ->check('accepted') // эта проверка не будет запущена
    */
   public function stopOnFail() {
     $field_index = count($this->fields) - 1;
@@ -222,35 +235,43 @@ class Validator {
 
   /**
    * Проведение проверки по всем добавленным правилам
+   * После проверки в экземпляр класса устанавливаются поля:
+   *   $data - отфильтрованный чистильщиками массив данных
+   *   $errors - массив с сообщениями об ошибках, пустой если ошибок не было
    *
-   * @return  bool  Результат проверки
+   * @param   array  $data  Массив с данными для валидации
+   * @return  bool          Результат проверки
+   *
+   * @example  $v->field('field_name')
+   *             ->check('not_empty')
+   *           $result = $v->validate($_POST);
    */
-  public function validate() {
-    $this->errors = [];
+  public function validate($data) {
     $is_correct = true;
+    $errors = [];
 
     foreach($this->fields as $field) {
       $field_name = $field['name'];
-      if(!isset($this->data[$field_name])) $this->data[$field_name] = '';
+      if(!isset($data[$field_name])) $data[$field_name] = '';
 
+      // Чистка значений
       foreach($field['rules'] as $rule) {
-        // Чистка значений
         if($rule['type'] == self::RULE_TYPE_CHANGE) {
-          $this->data[$field_name] = $this->sanitize(
+          $data[$field_name] = $this->sanitize(
             $rule['name'],
-            $this->data[$field_name],
+            $data[$field_name],
             $rule['params']
           );
         }
 
-        // Проверка
+        // Проверка значений
         if($rule['type'] == self::RULE_TYPE_CHECK) {
-          $value = $this->data[$field_name];
+          $value = $data[$field_name];
 
           foreach($rule['filters'] as $filter) {
             $result = $this->filter($filter['name'], $value, $filter['params']);
             if(!$result) {
-              if($rule['message'] != '') $this->errors[] = $rule['message'];
+              if($rule['message'] != '') $errors[] = $rule['message'];
 
               $is_correct = false;
 
@@ -261,6 +282,9 @@ class Validator {
         }
       }
     }
+
+    $this->data = $data;
+    $this->errors = $errors;
 
     return $is_correct;
   }

@@ -65,7 +65,8 @@ class DB {
 	 * @return  object  Объект ответа библиотеки
 	 *
 	 * @example  self::query("INSERT INTO users (id, name) VALUES (1, 'Ivan')")
-	 *           Используется для запросов, в которых нет необходимости парсить результат
+	 *           Используется для запросов, в которых нет необходимости
+	 *           парсить результат
 	 */
 	public static function query() {
 		return self::raw_query(self::prepare_query(func_get_args()));
@@ -94,8 +95,8 @@ class DB {
 	 *
 	 * @return  array|null  Массив с полями строки результата запроса
 	 *
-	 * @example  self::get_row("SELECT id, name, age FROM users WHERE id = ?i", 5)
-	 *           Вернет массив с результаами [ 'id' => '5', 'name' => 'Ivan', 'age' => '30' ]
+	 * @example  self::get_row("SELECT id, name FROM users WHERE id = ?i", 5)
+	 *           Вернет массив с результаами [ 'id' => '5', 'name' => 'Ivan' ]
 	 */
 	public static function get_row() {
 		$query = self::prepare_query(func_get_args());
@@ -112,12 +113,12 @@ class DB {
 	 *
 	 * @return  array  Массив массивов с полями результатов запроса
 	 *
-	 * @example  self::get_all("SELECT id, name, age FROM users")
+	 * @example  self::get_all("SELECT id, name FROM users")
 	 *           Вернет массив массивов с результаами:
 	 *           [
-	 *             [ 'id' => '3', 'name' => 'Ivan', 'age' => '30' ],
-	 *             [ 'id' => '4', 'name' => 'Ivan', 'age' => '30' ],
-	 *             [ 'id' => '5', 'name' => 'Ivan', 'age' => '30' ]
+	 *             [ 'id' => '3', 'name' => 'Ivan' ],
+	 *             [ 'id' => '4', 'name' => 'Ivan' ],
+	 *             [ 'id' => '5', 'name' => 'Ivan' ]
 	 *           ]
 	 */
 	public static function get_all() {
@@ -154,12 +155,12 @@ class DB {
 	 *
 	 * @return  array  Ассоциативный массив результатов
 	 *
-	 * @example  self::get_ind('id', "SELECT id, name, age FROM users")
+	 * @example  self::get_ind('id', "SELECT id, name FROM users")
 	 *           Вернет ассоциативный массив с результатами:
 	 *           [
-	 *             '3' => [ 'id' => '3', 'name' => 'Ivan', 'age' => '30' ],
-	 *             '4' => [ 'id' => '4', 'name' => 'Ivan', 'age' => '30' ],
-	 *             '5' => [ 'id' => '5', 'name' => 'Ivan', 'age' => '30' ]
+	 *             '3' => [ 'id' => '3', 'name' => 'Ivan' ],
+	 *             '4' => [ 'id' => '4', 'name' => 'Ivan' ],
+	 *             '5' => [ 'id' => '5', 'name' => 'Ivan' ]
 	 *           ]
 	 */
 	public static function get_ind() {
