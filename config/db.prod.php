@@ -5,7 +5,10 @@
  */
 return [
   'host' => 'localhost',
-  'user' => 'root',
-  'pass' => 'root',
-  'base' => 'base_prod'
+  'user' => '',
+  'pass' => '',
+  'base' => '',
+  'port' => NULL,
+  'socket' => NULL,
+  'charset' => 'utf8'
 ];

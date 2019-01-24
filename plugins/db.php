@@ -4,41 +4,59 @@
  * Класс работы с базой данных
  *
  * @package  XS-PHP
- * @version  1.0.0
+ * @version  2.0.0
  * @author   Sergei Ivankov <sergeiivankov@yandex.ru>
  * @link     https://github.com/xooler/xs-php
  */
 class DB {
 	/**
 	 * Объект текущего соединения с базой данных
+	 *
 	 * @var  object
 	 */
 	private static $conn;
 
 	/**
 	 * Стандартные настройки подключения к базе данных
+	 *
 	 * @var  array
 	 */
-	private static $defaults = array(
+	private static $defaults = [
 		'host' => 'localhost',
-		'user' => 'root',
+		'user' => '',
 		'pass' => '',
 		'base' => '',
 		'port' => NULL,
 		'socket' => NULL,
-		'charset' => 'utf8',
-	);
+		'charset' => 'utf8'
+	];
+
+  /**
+	 * Установленные настройки для подключения к базе данных
+	 *
+	 * @var  array
+	 */
+  private static $config = [];
+
+  /**
+   * Установка настроек подключения к базе данных
+   *
+   * @param  array  $config  Настройки подключения к базе данных
+   */
+  public static function config($config) {
+		self::$config = $config;
+	}
 
 	/**
 	 * Публичный метод для компиляции строки запроса с параметрами
 	 *
 	 * @return  string  Скомпилированная строка запроса
 	 *
-	 * @example  DB::parse("SELECT * FROM users WHERE id = ?i", 5)
+	 * @example  self::parse("SELECT * FROM users WHERE id = ?i", 5)
 	 *           Вернет строку "SELECT * FROM users WHERE id = 5"
 	 */
 	public static function parse() {
-		return DB::prepare_query(func_get_args());
+		return self::prepare_query(func_get_args());
 	}
 
 	/**
@@ -46,47 +64,48 @@ class DB {
 	 *
 	 * @return  object  Объект ответа библиотеки
 	 *
-	 * @example  DB::query("INSERT INTO users (id, name) VALUES (1, 'Ivan')")
-	 *           Используется для запросов, в которых нет необходимости парсить результат
+	 * @example  self::query("INSERT INTO users (id, name) VALUES (1, 'Ivan')")
+	 *           Используется для запросов, в которых нет необходимости
+	 *           парсить результат
 	 */
 	public static function query() {
-		return DB::raw_query(DB::prepare_query(func_get_args()));
+		return self::raw_query(self::prepare_query(func_get_args()));
 	}
 
 	/**
 	 * Получение первого элемента результата запроса
 	 *
-	 * @return  string|boolean  Первый элемент результата запроса
+	 * @return  string|null  Первый элемент результата запроса
 	 *
-	 * @example  DB::get_one("SELECT name FROM users WHERE id = ?i", 5)
+	 * @example  self::get_one("SELECT name FROM users WHERE id = ?i", 5)
 	 *           Вернет строку 'Ivan'
 	 */
 	public static function get_one() {
-		$query = DB::prepare_query(func_get_args());
-		if($res = DB::raw_query($query)) {
-			$row = DB::fetch($res);
-			DB::free($res);
+		$query = self::prepare_query(func_get_args());
+		if($res = self::raw_query($query)) {
+			$row = self::fetch($res);
+			self::free($res);
 			if(is_array($row)) return reset($row);
 		}
-		return false;
+		return null;
 	}
 
 	/**
 	 * Получение первой строки результатов запроса
 	 *
-	 * @return  array|false  Массив с полями строки результата запроса
+	 * @return  array|null  Массив с полями строки результата запроса
 	 *
-	 * @example  DB::get_row("SELECT id, name, age FROM users WHERE id = ?i", 5)
-	 *           Вернет массив с результаами [ 'id' => '5', 'name' => 'Ivan', 'age' => '30' ]
+	 * @example  self::get_row("SELECT id, name FROM users WHERE id = ?i", 5)
+	 *           Вернет массив с результаами [ 'id' => '5', 'name' => 'Ivan' ]
 	 */
 	public static function get_row() {
-		$query = DB::prepare_query(func_get_args());
-		if($res = DB::raw_query($query)) {
-			$ret = DB::fetch($res);
-			DB::free($res);
+		$query = self::prepare_query(func_get_args());
+		if($res = self::raw_query($query)) {
+			$ret = self::fetch($res);
+			self::free($res);
 			return $ret;
 		}
-		return false;
+		return null;
 	}
 
 	/**
@@ -94,20 +113,20 @@ class DB {
 	 *
 	 * @return  array  Массив массивов с полями результатов запроса
 	 *
-	 * @example  DB::get_all("SELECT id, name, age FROM users")
+	 * @example  self::get_all("SELECT id, name FROM users")
 	 *           Вернет массив массивов с результаами:
 	 *           [
-	 *             [ 'id' => '3', 'name' => 'Ivan', 'age' => '30' ],
-	 *             [ 'id' => '4', 'name' => 'Ivan', 'age' => '30' ],
-	 *             [ 'id' => '5', 'name' => 'Ivan', 'age' => '30' ]
+	 *             [ 'id' => '3', 'name' => 'Ivan' ],
+	 *             [ 'id' => '4', 'name' => 'Ivan' ],
+	 *             [ 'id' => '5', 'name' => 'Ivan' ]
 	 *           ]
 	 */
 	public static function get_all() {
 		$ret = array();
-		$query = DB::prepare_query(func_get_args());
-		if($res = DB::raw_query($query)) {
-			while($row = DB::fetch($res)) $ret[] = $row;
-			DB::free($res);
+		$query = self::prepare_query(func_get_args());
+		if($res = self::raw_query($query)) {
+			while($row = self::fetch($res)) $ret[] = $row;
+			self::free($res);
 		}
 		return $ret;
 	}
@@ -117,15 +136,15 @@ class DB {
 	 *
 	 * @return  array  Массив значений колонки
 	 *
-	 * @example  DB::get_col("SELECT id FROM users")
+	 * @example  self::get_col("SELECT id FROM users")
 	 *           Вернет массив с результатами: [ '3', '4', '5' ]
 	 */
 	public static function get_col() {
 		$ret = array();
-		$query = DB::prepare_query(func_get_args());
-		if($res = DB::raw_query($query)) {
-			while($row = DB::fetch($res)) $ret[] = reset($row);
-			DB::free($res);
+		$query = self::prepare_query(func_get_args());
+		if($res = self::raw_query($query)) {
+			while($row = self::fetch($res)) $ret[] = reset($row);
+			self::free($res);
 		}
 		return $ret;
 	}
@@ -136,25 +155,25 @@ class DB {
 	 *
 	 * @return  array  Ассоциативный массив результатов
 	 *
-	 * @example  DB::get_ind('id', "SELECT id, name, age FROM users")
+	 * @example  self::get_ind('id', "SELECT id, name FROM users")
 	 *           Вернет ассоциативный массив с результатами:
 	 *           [
-	 *             '3' => [ 'id' => '3', 'name' => 'Ivan', 'age' => '30' ],
-	 *             '4' => [ 'id' => '4', 'name' => 'Ivan', 'age' => '30' ],
-	 *             '5' => [ 'id' => '5', 'name' => 'Ivan', 'age' => '30' ]
+	 *             '3' => [ 'id' => '3', 'name' => 'Ivan' ],
+	 *             '4' => [ 'id' => '4', 'name' => 'Ivan' ],
+	 *             '5' => [ 'id' => '5', 'name' => 'Ivan' ]
 	 *           ]
 	 */
 	public static function get_ind() {
 		$args = func_get_args();
 		$index = array_shift($args);
-		$query = DB::prepare_query($args);
+		$query = self::prepare_query($args);
 
 		$ret = array();
-		if($res = DB::raw_query($query)) {
-			while($row = DB::fetch($res)) {
+		if($res = self::raw_query($query)) {
+			while($row = self::fetch($res)) {
 				$ret[$row[$index]] = $row;
 			}
-			DB::free($res);
+			self::free($res);
 		}
 		return $ret;
 	}
@@ -165,7 +184,7 @@ class DB {
 	 *
 	 * @return  array  Ассоциативный массив результатов
 	 *
-	 * @example  DB::get_ind_col('id', "SELECT id, name FROM users")
+	 * @example  self::get_ind_col('id', "SELECT id, name FROM users")
 	 *           Вернет ассоциативный массив с результатами:
 	 *           [
 	 *             '3' => 'Ivan',
@@ -176,16 +195,16 @@ class DB {
 	public static function get_ind_col() {
 		$args = func_get_args();
 		$index = array_shift($args);
-		$query = DB::prepare_query($args);
+		$query = self::prepare_query($args);
 
 		$ret = array();
-		if($res = DB::raw_query($query)) {
-			while($row = DB::fetch($res)) {
+		if($res = self::raw_query($query)) {
+			while($row = self::fetch($res)) {
 				$key = $row[$index];
 				unset($row[$index]);
 				$ret[$key] = reset($row);
 			}
-			DB::free($res);
+			self::free($res);
 		}
 		return $ret;
 	}
@@ -196,7 +215,7 @@ class DB {
 	 * @return  string  Идентификатор записи
 	 */
 	public static function insert_id() {
-		return mysqli_insert_id(DB::$conn);
+		return mysqli_insert_id(self::$conn);
 	}
 
 	/**
@@ -205,7 +224,7 @@ class DB {
 	 * @return  int  Количество ячеек
 	 */
 	public static function affected_rows() {
-		return mysqli_affected_rows(DB::$conn);
+		return mysqli_affected_rows(self::$conn);
 	}
 
 	/**
@@ -240,11 +259,11 @@ class DB {
 	 * @return  object          Объект ответа библиотеки
 	 */
 	private static function raw_query($query) {
-		$res = mysqli_query(DB::$conn, $query);
+		$res = mysqli_query(self::$conn, $query);
 
 		if(!$res) {
-			$error = mysqli_error(DB::$conn);
-			DB::error("$error. Полный запрос: [$query]");
+			$error = mysqli_error(self::$conn);
+			self::error("$error. Полный запрос: [$query]");
 		}
 
 		return $res;
@@ -257,16 +276,16 @@ class DB {
 	 * @return  string         Скомпилированная строка запроса
 	 */
 	private static function prepare_query($args) {
-		if(!DB::$conn) {
+		if(!self::$conn) {
 			// Слияние стандартных и параметров из файла настроек
-			$opt = array_merge(DB::$defaults, Config::get('db', true));
+			$opt = array_merge(self::$defaults, self::$config);
 
 			// Подключение к базе данных
-			@DB::$conn = mysqli_connect($opt['host'], $opt['user'], $opt['pass'], $opt['base'], $opt['port'], $opt['socket']);
-			if(!DB::$conn) DB::error(mysqli_connect_errno() . ' ' . mysqli_connect_error());
+			@self::$conn = mysqli_connect($opt['host'], $opt['user'], $opt['pass'], $opt['base'], $opt['port'], $opt['socket']);
+			if(!self::$conn) self::error(mysqli_connect_errno() . ' ' . mysqli_connect_error());
 
 			// Установка кодировки
-			mysqli_set_charset(DB::$conn, $opt['charset']) or DB::error(mysqli_error(DB::$conn));
+			mysqli_set_charset(self::$conn, $opt['charset']) or self::error(mysqli_error(self::$conn));
 			unset($opt);
 		}
 
@@ -278,7 +297,7 @@ class DB {
 		$pnum = floor(count($array) / 2);
 
 		// Проверка количества параметров и количества аргументов
-		if($pnum != $anum) DB::error("Количество аргументов ($anum) не соответствует количеству параметров ($pnum) в [$raw]");
+		if($pnum != $anum) self::error("Количество аргументов ($anum) не соответствует количеству параметров ($pnum) в [$raw]");
 
 		// Формирование строки запроса
 		foreach($array as $i => $part) {
@@ -290,25 +309,25 @@ class DB {
 			$value = array_shift($args);
 			switch ($part) {
 				case '?i':
-					$part = DB::escape_int($value);
+					$part = self::escape_int($value);
 					break;
 				case '?f':
-					$part = DB::escape_float($value);
+					$part = self::escape_float($value);
 					break;
 				case '?s':
-					$part = DB::escape_string($value);
+					$part = self::escape_string($value);
 					break;
 				case '?n':
-					$part = DB::escape_ident($value);
+					$part = self::escape_ident($value);
 					break;
 				case '?l':
-					$part = DB::escape_like($value);
+					$part = self::escape_like($value);
 					break;
 				case '?a':
-					$part = DB::create_in($value);
+					$part = self::create_in($value);
 					break;
 				case '?u':
-					$part = DB::create_set($value);
+					$part = self::create_set($value);
 					break;
 				case '?p':
 					$part = $value;
@@ -330,7 +349,7 @@ class DB {
 		if($value === NULL) return 'NULL';
 
 		if(!is_numeric($value)) {
-			DB::error('Ошибка в числовом (?i) параметре, передан ' . gettype($value));
+			self::error('Ошибка в числовом (?i) параметре, передан ' . gettype($value));
 			return false;
 		}
 
@@ -349,7 +368,7 @@ class DB {
 		if($value === NULL) return 'NULL';
 
 		if(!is_numeric((float) $value)) {
-			DB::error('Ошибка в числовом с плавающей запятой (?f) параметре, передан ' . gettype($value));
+			self::error('Ошибка в числовом с плавающей запятой (?f) параметре, передан ' . gettype($value));
 			return false;
 		}
 
@@ -367,7 +386,7 @@ class DB {
 	public static function escape_string($value) {
 		if($value === NULL) return 'NULL';
 
-		return "'" . mysqli_real_escape_string(DB::$conn, $value) . "'";
+		return "'" . mysqli_real_escape_string(self::$conn, $value) . "'";
 	}
 
 	/**
@@ -378,11 +397,11 @@ class DB {
 	 */
 	public static function escape_like($value) {
 		if($value === NULL) {
-			DB::error('Ошибка в строковом LIKE (?l) параметре, передан ' . gettype($value));
+			self::error('Ошибка в строковом LIKE (?l) параметре, передан ' . gettype($value));
 			return false;
 		}
 
-		return "'%" . mysqli_real_escape_string(DB::$conn, $value) . "%'";
+		return "'%" . mysqli_real_escape_string(self::$conn, $value) . "%'";
 	}
 
 	/**
@@ -393,7 +412,7 @@ class DB {
 	 */
 	public static function escape_ident($value) {
 		if($value) return "`" . str_replace("`", "``", $value) . "`";
-		else DB::error('Пустое значение для параметра идентификатора (?n)');
+		else self::error('Пустое значение для параметра идентификатора (?n)');
 	}
 
 	/**
@@ -404,7 +423,7 @@ class DB {
 	 */
 	public static function create_in($data) {
 		if(!is_array($data)) {
-			DB::error('Параметром для операции IN (?a) должен быть массив');
+			self::error('Параметром для операции IN (?a) должен быть массив');
 			return;
 		}
 
@@ -412,7 +431,7 @@ class DB {
 
 		$query = $comma = '';
 		foreach($data as $value) {
-			$query .= $comma . DB::escape_string($value);
+			$query .= $comma . self::escape_string($value);
 			$comma = ',';
 		}
 
@@ -427,18 +446,18 @@ class DB {
 	 */
 	public static function create_set($data) {
 		if(!is_array($data)) {
-			DB::error('Параметр для операции SET (?u) должен быть массивом, передан ' . gettype($data));
+			self::error('Параметр для операции SET (?u) должен быть массивом, передан ' . gettype($data));
 			return;
 		}
 
 		if(!$data) {
-			DB::error('Передан пустой массив для операции SET (?u)');
+			self::error('Передан пустой массив для операции SET (?u)');
 			return;
 		}
 
 		$query = $comma = '';
 		foreach($data as $key => $value) {
-			$query .= $comma . DB::escape_ident($key) . '=' . DB::escape_string($value);
+			$query .= $comma . self::escape_ident($key) . '=' . self::escape_string($value);
 			$comma = ',';
 		}
 

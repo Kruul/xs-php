@@ -2,53 +2,42 @@
 
 /**
  * Роутер
- * Настройки роутов приложения хранятся в переменной $routes в файле /app/bootstrap.php
  *
  * @package  XS-PHP
- * @version  1.0.0
+ * @version  2.0.0
  * @author   Sergei Ivankov <sergeiivankov@yandex.ru>
  * @link     https://github.com/xooler/xs-php
  */
 class Router {
   /**
-   * Хранение скомпилированных роутов
-   * @var  array
-   */
-  private static $routes = [];
-
-  /**
-   * Заменяет паттерны в роутах и компилирование резулярных выражений
-   * Устанавливает результат в приватное свойство $routes
+   * Компилирование паттернов роутов для корректной работы регулярных выражений
    *
-   * @param   array  $routes           Массив настроек роутов
-   * @param   array  $routes_patterns  Паттерны для замены в роутах
+   * @param   array  $routes  Массив роутов
+   * @return  array           Массив скомпилированных роутов
    */
-  public static function compile_routes($routes, $routes_patterns) {
+  public static function compile_routes($routes) {
+    $compiled_routes = [];
+
     foreach($routes as $pattern => $route) {
-      $compiled_pattern = $pattern;
+      $pattern = str_replace('/', '\/', $pattern);
+      $pattern = str_replace('\\\\', '\\', $pattern);
 
-      foreach($routes_patterns as $short => $regexp) {
-        $compiled_pattern = str_replace(':' . $short, $regexp, $compiled_pattern);
-      }
-      $compiled_pattern = str_replace('/', '\/', $compiled_pattern);
-      $compiled_pattern = str_replace('\\\\', '\\', $compiled_pattern);
-
-      unset($routes[$pattern]);
-      $routes[$compiled_pattern] = $route;
+      $compiled_routes[$pattern] = $route;
     }
 
-    self::$routes = $routes;
+    return $compiled_routes;
   }
 
   /**
    * Обрабатывает URI адрес запроса для получения контроллера, действия и параметров
    *
-   * @param   array  $routes           Массив настроек роутов
-   * @param   array  $routes_patterns  Паттерны для замены в роутах
    * @return  array                    Массив с контроллером, действием и параметрами
    */
-  public static function exec($routes, $routes_patterns) {
-    if(count(self::$routes) == 0) self::compile_routes($routes, $routes_patterns);
+  public static function exec() {
+    $routes_config = Config::get('routes');
+    if($routes_config === null) $routes_config = [ '(.*)' => '$1' ];
+
+    $routes = self::compile_routes($routes_config);
 
     $sub_uri = $_SERVER['REQUEST_URI'];
 
@@ -57,18 +46,25 @@ class Router {
       $sub_uri = substr($sub_uri, strlen(BASE_PATH));
     }
 
-    $uri = $uri_parts = urldecode(parse_url($sub_uri)['path']);
+    $parsed_url = parse_url($sub_uri);
+    if(!isset($parsed_url['path'])) return null;
+
+    $uri = urldecode($parsed_url['path']);
+    $found_uri = null;
 
     // Поиск соответсвия в настройках роутов
-    foreach(self::$routes as $pattern => $route) {
+    foreach($routes as $pattern => $route) {
       if(preg_match("/^" . $pattern . "$/u", $uri)) {
         // Замена роута на строку с названием контроллера и действия
-        $uri = preg_replace("/^" . $pattern . "$/u", $route, $uri);
+        $found_uri = preg_replace("/^" . $pattern . "$/u", $route, $uri);
         break;
       }
     }
 
-    $uri_parts = explode('/', $uri);
+    // Если роут не был найден в списке, возвращаем null
+    if($found_uri === null) return null;
+
+    $uri_parts = explode('/', $found_uri);
     // Удаление первого пустого элемента, так как путь начинается с "/"
     array_shift($uri_parts);
 
