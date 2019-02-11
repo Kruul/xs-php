@@ -15,7 +15,6 @@ class Validator {
   const RULE_TYPE_CHANGE = 0;
   const RULE_TYPE_CHECK = 1;
 
-
   /**
    * Список фильтров
    *

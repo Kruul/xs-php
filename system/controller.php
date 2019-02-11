@@ -148,7 +148,7 @@ class Controller {
    */
   public function before_handlers() {
     foreach(self::$before_handlers as $handler) {
-      // Передаем в функцию экземплят текущего контроллера
+      // Передаем в функцию экземпляр текущего контроллера
       $handler($this);
     }
   }
@@ -158,7 +158,7 @@ class Controller {
    */
   public function after_handlers() {
     foreach(self::$after_handlers as $handler) {
-      // Передаем в функцию экземплят текущего контроллера
+      // Передаем в функцию экземпляр текущего контроллера
       $handler($this);
     }
   }
